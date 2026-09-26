@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight Pulse - Yatharth</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    overflow:hidden;
+    background:linear-gradient(135deg,#080012,#18002e,#2a0052);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+}
+
+/* Animated stars */
+body::before{
+    content:"";
+    position:fixed;
+    width:200%;
+    height:200%;
+    background:
+      radial-gradient(circle,#ffffff44 2px,transparent 3px);
+    background-size:70px 70px;
+    animation:bgMove 30s linear infinite;
+}
+
+@keyframes bgMove{
+from{transform:translate(0,0);}
+to{transform:translate(-180px,-180px);}
+}
+
+.card{
+    position:relative;
+    z-index:2;
+    width:360px;
+    padding:30px;
+    border-radius:28px;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 0 40px rgba(217,70,239,.4);
+    text-align:center;
+}
+
+/* Album Cover */
+
+.cover{
+    width:220px;
+    height:220px;
+    margin:auto;
+    border-radius:24px;
+    background:linear-gradient(135deg,#d946ef,#7c3aed,#2563eb);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 0 30px #d946ef;
+}
+
+/* Vinyl */
+
+.disc{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:
+      radial-gradient(circle,#666 10%,#111 12%,#444 50%,#111 100%);
+    border:4px solid #ddd;
+}
+
+.spin{
+    animation:spin 3s linear infinite;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+h1{
+    margin:22px 0 6px;
+    font-size:30px;
+}
+
+p{
+    color:#ddd;
+    margin-bottom:20px;
+}
+
+/* Equalizer */
+
+.eq{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:6px;
+    height:45px;
+    margin-bottom:25px;
+}
+
+.eq span{
+    width:8px;
+    height:12px;
+    border-radius:20px;
+    background:#d946ef;
+    animation:bounce .8s infinite;
+    animation-play-state:paused;
+}
+
+.eq.playing span{
+    animation-play-state:running;
+}
+
+.eq span:nth-child(2){animation-delay:.1s;}
+.eq span:nth-child(3){animation-delay:.2s;}
+.eq span:nth-child(4){animation-delay:.3s;}
+.eq span:nth-child(5){animation-delay:.4s;}
+.eq span:nth-child(6){animation-delay:.5s;}
+
+@keyframes bounce{
+0%,100%{height:12px;}
+50%{height:40px;}
+}
+
+/* Buttons */
+
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+    transition:.25s;
+}
+
+#playBtn{
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#d946ef,#7c3aed);
+    color:white;
+    font-size:34px;
+    box-shadow:0 0 20px #d946ef;
+}
+
+#playBtn:hover{
+    transform:scale(1.08);
+}
+
+#loopBtn{
+    padding:0 18px;
+    border-radius:30px;
+    background:#333;
+    color:white;
+    font-size:16px;
+}
+
+#loopBtn.active{
+    background:linear-gradient(135deg,#d946ef,#7c3aed);
+    box-shadow:0 0 15px #d946ef;
+}
+
+footer{
+    margin-top:22px;
+    color:#bbb;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="cover">
+    <div class="disc" id="disc"></div>
+</div>
+
+<h1>Midnight Pulse</h1>
+<p>Original Track by Yatharth</p>
+
+<div class="eq" id="eq">
+<span></span><span></span><span></span>
+<span></span><span></span><span></span>
+</div>
+
+<div class="controls">
+<button id="playBtn">▶</button>
+<button id="loopBtn">🔁 Loop OFF</button>
+</div>
+
+<footer>Made with ❤️ by Yatharth</footer>
+
+<audio id="song" src="song.wav"></audio>
+
+</div>
+
+<script>
+const song=document.getElementById("song");
+const playBtn=document.getElementById("playBtn");
+const loopBtn=document.getElementById("loopBtn");
+const disc=document.getElementById("disc");
+const eq=document.getElementById("eq");
+
+/* Play / Pause */
+
+playBtn.onclick=async()=>{
+
+    if(song.paused){
+
+        try{
+            await song.play();
+            playBtn.innerHTML="❚❚";
+            disc.classList.add("spin");
+            eq.classList.add("playing");
+        }catch(e){}
+
+    }else{
+
+        song.pause();
+        playBtn.innerHTML="▶";
+        disc.classList.remove("spin");
+        eq.classList.remove("playing");
+
+    }
+
+};
+
+/* Loop Toggle */
+
+loopBtn.onclick=()=>{
+
+    song.loop=!song.loop;
+
+    if(song.loop){
+        loopBtn.innerHTML="🔁 Loop ON";
+        loopBtn.classList.add("active");
+    }else{
+        loopBtn.innerHTML="🔁 Loop OFF";
+        loopBtn.classList.remove("active");
+    }
+
+};
+
+/* Song End */
+
+song.onended=()=>{
+
+    if(!song.loop){
+        playBtn.innerHTML="▶";
+        disc.classList.remove("spin");
+        eq.classList.remove("playing");
+    }
+
+};
+</script>
+
+</body>
+</html>
